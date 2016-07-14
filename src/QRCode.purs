@@ -1,6 +1,8 @@
 module QRCode
   ( mkQRCodeSimple
   , mkQRCode
+  , mkQRCodeNodeSimple
+  , mkQRCodeNode
   , makeCode
   , clear
   , module QRCode.Types
@@ -8,21 +10,31 @@ module QRCode
 
 import QRCode.Types
 import Control.Monad.Eff (Eff)
-import Data.Function.Uncurried (Fn1, Fn2, runFn1, runFn2)
+import Data.Function.Eff (EffFn1, EffFn2, runEffFn1, runEffFn2)
 
-foreign import mkQRCodeSimpleImpl :: forall eff. Fn2 String String (Eff (qrcode :: QRCODE | eff) QRCode)
-foreign import mkQRCodeImpl :: forall eff. Fn2 String Config (Eff (qrcode :: QRCODE | eff) QRCode)
-foreign import makeCodeImpl :: forall eff. Fn2 String QRCode (Eff (qrcode :: QRCODE | eff) QRCode)
-foreign import clearImpl :: forall eff. Fn1 QRCode (Eff (qrcode :: QRCODE | eff) QRCode)
+import DOM.HTML.Types (HTMLElement)
 
-mkQRCodeSimple :: forall eff. String -> String -> (Eff (qrcode :: QRCODE | eff) QRCode)
-mkQRCodeSimple = runFn2 mkQRCodeSimpleImpl
+foreign import mkQRCodeSimpleImpl :: forall eff. EffFn2 (qrcode :: QRCODE | eff) String String QRCode
+foreign import mkQRCodeImpl :: forall eff. EffFn2 (qrcode :: QRCODE | eff) String Config QRCode
+foreign import mkQRCodeNodeSimpleImpl :: forall eff. EffFn2 (qrcode :: QRCODE | eff) HTMLElement String QRCode
+foreign import mkQRCodeNodeImpl :: forall eff. EffFn2 (qrcode :: QRCODE | eff) HTMLElement Config QRCode
+foreign import makeCodeImpl :: forall eff. EffFn2 (qrcode :: QRCODE | eff) String QRCode QRCode
+foreign import clearImpl :: forall eff. EffFn1 (qrcode :: QRCODE | eff) QRCode QRCode
 
-mkQRCode :: forall eff. String -> Config -> (Eff (qrcode :: QRCODE | eff) QRCode)
-mkQRCode = runFn2 mkQRCodeImpl
+mkQRCodeSimple :: forall eff. String -> String -> Eff (qrcode :: QRCODE | eff) QRCode
+mkQRCodeSimple = runEffFn2 mkQRCodeSimpleImpl
 
-makeCode :: forall eff. String -> QRCode -> (Eff (qrcode :: QRCODE | eff) QRCode)
-makeCode = runFn2 makeCodeImpl
+mkQRCode :: forall eff. String -> Config -> Eff (qrcode :: QRCODE | eff) QRCode
+mkQRCode = runEffFn2 mkQRCodeImpl
 
-clear :: forall eff. QRCode -> (Eff (qrcode :: QRCODE | eff) QRCode)
-clear = runFn1 clearImpl
+mkQRCodeNodeSimple :: forall eff. HTMLElement -> String -> Eff (qrcode :: QRCODE | eff) QRCode
+mkQRCodeNodeSimple = runEffFn2 mkQRCodeNodeSimpleImpl
+
+mkQRCodeNode :: forall eff. HTMLElement -> Config -> Eff (qrcode :: QRCODE | eff) QRCode
+mkQRCodeNode = runEffFn2 mkQRCodeNodeImpl
+
+makeCode :: forall eff. String -> QRCode -> Eff (qrcode :: QRCODE | eff) QRCode
+makeCode = runEffFn2 makeCodeImpl
+
+clear :: forall eff. QRCode -> Eff (qrcode :: QRCODE | eff) QRCode
+clear = runEffFn1 clearImpl
