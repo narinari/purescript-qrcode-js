@@ -21,7 +21,7 @@
     "purescript-console": "^1.0.0",
     "qrcode.js": "qrcode-js#*",
     "purescript-foreign": "^1.0.0",
-    "purescript-dom": "^1.1.0",
+    "purescript-dom": "^2.0.0",
     "purescript-eff-functions": "^1.0.0"
   },
   "devDependencies": {
