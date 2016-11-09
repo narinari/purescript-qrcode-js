@@ -1,8 +1,10 @@
 module Main where
 
 import Prelude
-import Control.Monad.Eff (Eff, runPure)
+import Control.Monad.Eff (Eff)
+
 import Control.Monad.Eff.Console (CONSOLE, log)
+import Control.Monad.Except (runExcept)
 import QRCode
 
 import Data.Nullable (toMaybe)
@@ -13,9 +15,8 @@ import DOM (DOM)
 import DOM.HTML.Types
 import DOM.Node.Types
 import DOM.HTML (window)
-import DOM.HTML.Window (document) 
+import DOM.HTML.Window (document)
 import DOM.Node.NonElementParentNode (getElementById)
-import Debug.Trace
 
 foreign import onLoad :: forall eff. Eff eff Unit -> Eff eff Unit
 
@@ -29,8 +30,8 @@ main = onLoad $ void $ do
 
   doc <- htmlDocumentToNonElementParentNode <$> (window >>= document)
 
-  qrcode4Elm <- (eitherToMaybe <=< map (readHTMLElement <<< toForeign)) <$> toMaybe <$> getElementById (ElementId "qrcode4") doc
-  qrcode5Elm <- (eitherToMaybe <=< map (readHTMLElement <<< toForeign)) <$> toMaybe <$> getElementById (ElementId "qrcode5") doc
+  qrcode4Elm <- getHTMLElement "qrcode4" doc
+  qrcode5Elm <- getHTMLElement "qrcode5" doc
 
   maybe (pure unit) (_ $> unit)
     $ flip mkQRCodeNodeSimple "http://example.com" <$> qrcode4Elm
@@ -42,4 +43,8 @@ main = onLoad $ void $ do
     <$> qrcode5Elm
 
   where
+  getHTMLElement id_ doc =
+    (eitherToMaybe <=< (map $ runExcept <<< readHTMLElement <<< toForeign))
+    <$> toMaybe
+    <$> getElementById (ElementId id_) doc
   eitherToMaybe = either (const Nothing) Just
