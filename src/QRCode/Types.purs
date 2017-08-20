@@ -1,6 +1,8 @@
 module QRCode.Types where
 
-foreign import data QRCODE :: !
+import Control.Monad.Eff (kind Effect)
+
+foreign import data QRCODE :: Effect
 
 data QRCode
 

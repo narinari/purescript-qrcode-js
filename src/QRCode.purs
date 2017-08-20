@@ -10,7 +10,7 @@ module QRCode
 
 import QRCode.Types
 import Control.Monad.Eff (Eff)
-import Data.Function.Eff (EffFn1, EffFn2, runEffFn1, runEffFn2)
+import Control.Monad.Eff.Uncurried (EffFn1, EffFn2, runEffFn1, runEffFn2)
 
 import DOM.HTML.Types (HTMLElement)
 
